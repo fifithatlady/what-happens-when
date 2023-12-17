@@ -205,7 +205,7 @@ Check HSTS list
   single HTTP request could potentially leave the user vulnerable to a
   `downgrade attack`_, which is why the HSTS list is included in modern web
   browsers.)
-
+ 
 DNS lookup
 ----------
 
@@ -217,18 +217,17 @@ DNS lookup
   local ``hosts`` file (whose location `varies by OS`_) before trying to
   resolve the hostname through DNS.
 * If ``gethostbyname`` does not have it cached nor can find it in the ``hosts``
-  file then it makes a request to the DNS server configured in the network
+  file, then it makes a request to the DNS server configured in the network
   stack. This is typically the local router or the ISP's caching DNS server.
-* If the DNS server is on the same subnet the network library follows the
+* If the DNS server is on the same subnet, the network library follows the
   ``ARP process`` below for the DNS server.
 * If the DNS server is on a different subnet, the network library follows
   the ``ARP process`` below for the default gateway IP.
 
-
 ARP process
 -----------
 
-In order to send an ARP (Address Resolution Protocol) broadcast the network
+In order to send an ARP (Address Resolution Protocol) broadcast, the network
 stack library needs the target IP address to lookup. It also needs to know the
 MAC address of the interface it will use to send out the ARP broadcast.
 
@@ -237,13 +236,11 @@ the cache, the library function returns the result: Target IP = MAC.
 
 If the entry is not in the ARP cache:
 
-* The route table is looked up, to see if the Target IP address is on any of
+* The route table is looked up to see if the Target IP address is on any of
   the subnets on the local route table. If it is, the library uses the
   interface associated with that subnet. If it is not, the library uses the
   interface that has the subnet of our default gateway.
-
 * The MAC address of the selected network interface is looked up.
-
 * The network library sends a Layer 2 (data link layer of the `OSI model`_)
   ARP request:
 
@@ -258,8 +255,8 @@ Depending on what type of hardware is between the computer and the router:
 
 Directly connected:
 
-* If the computer is directly connected to the router the router response
-  with an ``ARP Reply`` (see below)
+* If the computer is directly connected to the router, the router responds
+  with an ``ARP Reply`` (see below).
 
 Hub:
 
@@ -271,14 +268,12 @@ Switch:
 
 * If the computer is connected to a switch, the switch will check its local
   CAM/MAC table to see which port has the MAC address we are looking for. If
-  the switch has no entry for the MAC address it will rebroadcast the ARP
+  the switch has no entry for the MAC address, it will rebroadcast the ARP
   request to all other ports.
-
-* If the switch has an entry in the MAC/CAM table it will send the ARP request
+* If the switch has an entry in the MAC/CAM table, it will send the ARP request
   to the port that has the MAC address we are looking for.
-
 * If the router is on the same "wire", it will respond with an ``ARP Reply``
-  (see below)
+  (see below).
 
 ``ARP Reply``::
 
@@ -288,7 +283,7 @@ Switch:
     Target IP: interface.ip.goes.here
 
 Now that the network library has the IP address of either our DNS server or
-the default gateway it can resume its DNS process:
+the default gateway, it can resume its DNS process:
 
 * The DNS client establishes a socket to UDP port 53 on the DNS server,
   using a source port above 1023.
@@ -323,7 +318,7 @@ At this point the packet is ready to be transmitted through either:
 * `WiFi`_
 * `Cellular data network`_
 
-For most home or small business Internet connections the packet will pass from
+For most home or small business Internet connections, the packet will pass from
 your computer, possibly through a local network, and then through a modem
 (MOdulator/DEModulator) which converts digital 1's and 0's into an analog
 signal suitable for transmission over telephone, cable, or wireless telephony
@@ -347,53 +342,47 @@ the TTL field reaches zero or if the current router has no space in its queue
 This send and receive happens multiple times following the TCP connection flow:
 
 * Client chooses an initial sequence number (ISN) and sends the packet to the
-  server with the SYN bit set to indicate it is setting the ISN
+  server with the SYN bit set to indicate it is setting the ISN.
 * Server receives SYN and if it's in an agreeable mood:
-   * Server chooses its own initial sequence number
-   * Server sets SYN to indicate it is choosing its ISN
+   * Server chooses its own initial sequence number.
+   * Server sets SYN to indicate it is choosing its ISN.
    * Server copies the (client ISN +1) to its ACK field and adds the ACK flag
-     to indicate it is acknowledging receipt of the first packet
+     to indicate it is acknowledging receipt of the first packet.
 * Client acknowledges the connection by sending a packet:
-   * Increases its own sequence number
-   * Increases the receiver acknowledgment number
-   * Sets ACK field
+   * Increases its own sequence number.
+   * Increases the receiver acknowledgment number.
+   * Sets ACK field.
 * Data is transferred as follows:
-   * As one side sends N data bytes, it increases its SEQ by that number
+   * As one side sends N data bytes, it increases its SEQ by that number.
    * When the other side acknowledges receipt of that packet (or a string of
      packets), it sends an ACK packet with the ACK value equal to the last
-     received sequence from the other
+     received sequence from the other.
 * To close the connection:
-   * The closer sends a FIN packet
-   * The other sides ACKs the FIN packet and sends its own FIN
-   * The closer acknowledges the other side's FIN with an ACK
+   * The closer sends a FIN packet.
+   * The other side ACKs the FIN packet and sends its own FIN.
+   * The closer acknowledges the other side's FIN with an ACK.
 
 TLS handshake
 -------------
 * The client computer sends a ``ClientHello`` message to the server with its
   Transport Layer Security (TLS) version, list of cipher algorithms and
   compression methods available.
-
 * The server replies with a ``ServerHello`` message to the client with the
   TLS version, selected cipher, selected compression methods and the server's
   public certificate signed by a CA (Certificate Authority). The certificate
   contains a public key that will be used by the client to encrypt the rest of
   the handshake until a symmetric key can be agreed upon.
-
 * The client verifies the server digital certificate against its list of
   trusted CAs. If trust can be established based on the CA, the client
   generates a string of pseudo-random bytes and encrypts this with the server's
   public key. These random bytes can be used to determine the symmetric key.
-
 * The server decrypts the random bytes using its private key and uses these
   bytes to generate its own copy of the symmetric master key.
-
 * The client sends a ``Finished`` message to the server, encrypting a hash of
   the transmission up to this point with the symmetric key.
-
 * The server generates its own hash, and then decrypts the client-sent hash
   to verify that it matches. If it does, it sends its own ``Finished`` message
   to the client, also encrypted with the symmetric key.
-
 * From now on the TLS session transmits the application (HTTP) data encrypted
   with the agreed symmetric key.
 
@@ -433,7 +422,7 @@ where ``[other headers]`` refers to a series of colon-separated key-value pairs
 formatted as per the HTTP specification and separated by single newlines.
 (This assumes the web browser being used doesn't have any bugs violating the
 HTTP spec. This also assumes that the web browser is using ``HTTP/1.1``,
-otherwise it may not include the ``Host`` header in the request and the version
+otherwise, it may not include the ``Host`` header in the request, and the version
 specified in the ``GET`` request will either be ``HTTP/1.0`` or ``HTTP/0.9``.)
 
 HTTP/1.1 defines the "close" connection option for the sender to signal that
